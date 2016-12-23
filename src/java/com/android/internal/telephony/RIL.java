@@ -1278,7 +1278,7 @@ public final class RIL extends BaseCommands implements CommandsInterface {
         rr.mParcel.writeInt(0);
 //===
 
-        mEventLog.writeRilAnswer(rr.mSerial);
+        mMetrics.writeRilAnswer(mInstanceId, rr.mSerial);
 
         send(rr);
     }
@@ -4020,6 +4020,7 @@ private static final char[] HEX_CHARS = { '0', '1', '2', '3', '4', '5', '6', '7'
             response.add(getDataCallResponse(p, ver));
         }
 
+        mMetrics.writeRilDataCallList(mInstanceId, response);
 
         return response;
     }
