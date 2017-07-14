@@ -238,7 +238,7 @@ class RILRequest {
  *
  * {@hide}
  */
-public final class RIL extends BaseCommands implements CommandsInterface {
+public class RIL extends BaseCommands implements CommandsInterface {
     static final String RILJ_LOG_TAG = "RILJ";
     // Have a separate wakelock instance for Ack
     static final String RILJ_ACK_WAKELOCK_NAME = "RILJ_ACK_WL";
@@ -644,7 +644,7 @@ public final class RIL extends BaseCommands implements CommandsInterface {
                     s.connect(l);
                 } catch (IOException ex) {
                     Rlog.i (RILJ_LOG_TAG, "rild connect ex: " + ex.toString());
-                    
+
                     try {
                         if (s != null) {
                             s.close();
@@ -2593,7 +2593,7 @@ public final class RIL extends BaseCommands implements CommandsInterface {
         }
     }
 
-    private void
+    protected void
     send(RILRequest rr) {
         Message msg;
 
@@ -2738,15 +2738,15 @@ public final class RIL extends BaseCommands implements CommandsInterface {
         Object ret = null;
 
         if (error == 0 || p.dataAvail() > 0) {
-            
+
             Rlog.d(RILJ_LOG_TAG, "processSolicited: " + rr.mRequest + " length:" + p.dataAvail());
-            
-            
+
+
 
             final byte[] data = p.marshall();
             String hex = toHexString(data);
             Rlog.d(RILJ_LOG_TAG, hex);
-            
+
             // either command succeeds or command fails but with data payload
             try {switch (rr.mRequest) {
             /*
@@ -3107,7 +3107,7 @@ private static final char[] HEX_CHARS = { '0', '1', '2', '3', '4', '5', '6', '7'
         return new String(hexChars);
       }
 
-    private void
+    protected void
     processUnsolicited (Parcel p, int type) {
         int response;
         Object ret;
@@ -3652,7 +3652,7 @@ private static final char[] HEX_CHARS = { '0', '1', '2', '3', '4', '5', '6', '7'
         }
     }
 
-    private Object
+    protected Object
     responseInts(Parcel p) {
         int numInts;
         int response[];
@@ -3727,7 +3727,7 @@ private static final char[] HEX_CHARS = { '0', '1', '2', '3', '4', '5', '6', '7'
         return sms;
     }
 
-    private Object
+    protected Object
     responseString(Parcel p) {
         String response;
 
@@ -3736,7 +3736,7 @@ private static final char[] HEX_CHARS = { '0', '1', '2', '3', '4', '5', '6', '7'
         return response;
     }
 
-    private Object
+    protected Object
     responseStrings(Parcel p) {
         int num;
         String response[];
@@ -3808,7 +3808,7 @@ private static final char[] HEX_CHARS = { '0', '1', '2', '3', '4', '5', '6', '7'
                 ? android.util.Base64.decode(s, android.util.Base64.DEFAULT) : (byte[]) null);
     }
 
-    private Object
+    protected Object
     responseIccCardStatus(Parcel p) {
         IccCardApplicationStatus appStatus;
 
@@ -3859,7 +3859,7 @@ private static final char[] HEX_CHARS = { '0', '1', '2', '3', '4', '5', '6', '7'
         return response;
     }
 
-    private Object
+    protected Object
     responseCallList(Parcel p) {
         int num;
         int voiceSettings;
@@ -4071,14 +4071,14 @@ private static final char[] HEX_CHARS = { '0', '1', '2', '3', '4', '5', '6', '7'
         return dataCall;
     }
 
-    private Object
+    protected Object
     responseOperatorInfos(Parcel p) {
 //+++
         ArrayList<OperatorInfo> ret;
         Integer count = p.readInt() / 4;
-        
+
         ret = new ArrayList<OperatorInfo>(count);
-        
+
         for (int i = 0 ; i < count ; i++) {
             String operatorAlphaLong = p.readString();
             String operatorAlphaShort = p.readString();
@@ -4086,11 +4086,11 @@ private static final char[] HEX_CHARS = { '0', '1', '2', '3', '4', '5', '6', '7'
             String state = p.readString().toLowerCase();
             String unknownId = p.readString();
 
-            if (RILJ_LOGD) riljLog("[" + i + "]: " + 
-                operatorAlphaLong + ", " + 
-                operatorAlphaShort + ", " + 
-                operatorNumeric + ", " + 
-                state + ", " + 
+            if (RILJ_LOGD) riljLog("[" + i + "]: " +
+                operatorAlphaLong + ", " +
+                operatorAlphaShort + ", " +
+                operatorNumeric + ", " +
+                state + ", " +
                 unknownId);
 
             ret.add (
@@ -4226,7 +4226,7 @@ private static final char[] HEX_CHARS = { '0', '1', '2', '3', '4', '5', '6', '7'
         return response;
     }
 
-    private Object
+    protected Object
     responseSignalStrength(Parcel p) {
         // Assume this is gsm, but doesn't matter as ServiceStateTracker
         // sets the proper value.
@@ -4710,12 +4710,12 @@ private static final char[] HEX_CHARS = { '0', '1', '2', '3', '4', '5', '6', '7'
         }
     }
 
-    private void riljLog(String msg) {
+    protected void riljLog(String msg) {
         Rlog.d(RILJ_LOG_TAG, msg
                 + (mInstanceId != null ? (" [SUB" + mInstanceId + "]") : ""));
     }
 
-    private void riljLogv(String msg) {
+    protected void riljLogv(String msg) {
         Rlog.v(RILJ_LOG_TAG, msg
                 + (mInstanceId != null ? (" [SUB" + mInstanceId + "]") : ""));
     }
@@ -4779,7 +4779,7 @@ private static final char[] HEX_CHARS = { '0', '1', '2', '3', '4', '5', '6', '7'
     private Object
     responseAm(Parcel p) {
         Rlog.d(RILJ_LOG_TAG, "responseAm");
-    
+
         Object ret = responseString(p);
         String amString = (String) ret;
         Rlog.d(RILJ_LOG_TAG, "Executing AM: " + amString);
