@@ -248,6 +248,7 @@ public class RIL extends BaseCommands implements CommandsInterface {
     static final int RADIO_SCREEN_OFF = 0;
     static final int RADIO_SCREEN_ON = 1;
     static final int RIL_HISTOGRAM_BUCKET_COUNT = 5;
+    static final int mQANElements = 6;
 
     /**
      * Wake lock timeout should be longer than the longest timeout in
@@ -4076,54 +4077,31 @@ private static final char[] HEX_CHARS = { '0', '1', '2', '3', '4', '5', '6', '7'
 
     protected Object
     responseOperatorInfos(Parcel p) {
-//+++
+        String strings[] = (String[])responseStrings(p);
         ArrayList<OperatorInfo> ret;
-        Integer count = p.readInt() / 4;
 
-        ret = new ArrayList<OperatorInfo>(count);
-
-        for (int i = 0 ; i < count ; i++) {
-            String operatorAlphaLong = p.readString();
-            String operatorAlphaShort = p.readString();
-            String operatorNumeric = p.readString();
-            String state = p.readString().toLowerCase();
-            String unknownId = p.readString();
-
-            if (RILJ_LOGD) riljLog("[" + i + "]: " +
-                operatorAlphaLong + ", " +
-                operatorAlphaShort + ", " +
-                operatorNumeric + ", " +
-                state + ", " +
-                unknownId);
-
-            ret.add (
-                new OperatorInfo(
-                    operatorAlphaLong,
-                    operatorAlphaShort,
-                    operatorNumeric,
-                    state));
+        if (strings.length % mQANElements != 0) {
+            throw new RuntimeException("RIL_REQUEST_QUERY_AVAILABLE_NETWORKS: invalid response. Got "
+                                       + strings.length + " strings, expected multiple of " + mQANElements);
         }
-//===
-//        String strings[] = (String [])responseStrings(p);
-//        ArrayList<OperatorInfo> ret;
-//
-//        if (strings.length % 4 != 0) {
-//            throw new RuntimeException(
-//                "RIL_REQUEST_QUERY_AVAILABLE_NETWORKS: invalid response. Got "
-//                + strings.length + " strings, expected multible of 4");
-//        }
-//
-//        ret = new ArrayList<OperatorInfo>(strings.length / 4);
-//
-//        for (int i = 0 ; i < strings.length ; i += 4) {
-//            ret.add (
-//                new OperatorInfo(
-//                    strings[i+0],
-//                    strings[i+1],
-//                    strings[i+2],
-//                    strings[i+3]));
-//        }
-//---
+
+        ret = new ArrayList<OperatorInfo>(strings.length / mQANElements);
+        for (int i = 0 ; i < strings.length ; i += mQANElements) {
+            String strOperatorLong = strings[i+0];
+            String strOperatorNumeric = strings[i+2];
+            String strState = strings[i+3].toLowerCase();
+
+            Rlog.v(RILJ_LOG_TAG,
+                   "XMM7260: Add OperatorInfo: " + strOperatorLong +
+                   ", " + strOperatorLong +
+                   ", " + strOperatorNumeric +
+                   ", " + strState);
+
+            ret.add(new OperatorInfo(strOperatorLong, // operatorAlphaLong
+                                     strOperatorLong, // operatorAlphaShort
+                                     strOperatorNumeric,    // operatorNumeric
+                                     strState));  // stateString
+        }
 
         return ret;
     }
