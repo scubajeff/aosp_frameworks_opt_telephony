@@ -3193,6 +3193,9 @@ private static final char[] HEX_CHARS = { '0', '1', '2', '3', '4', '5', '6', '7'
             case RIL_UNSOL_RESPONSE_HANDOVER: ret =  responseVoid(p); break;
             case RIL_UNSOL_WB_AMR_STATE: ret =  responseInts(p); break;
             case RIL_UNSOL_SNDMGR_WB_AMR_REPORT: ret =  responseVoid(p); break;
+            case RIL_UNSOL_STK_CALL_CONTROL_RESULT: ret = responseVoid(p); break;
+            case RIL_UNSOL_SIM_PB_READY: ret =  responseVoid(p); break;
+            case RIL_UNSOL_SRVCC_HANDOVER: ret =  responseVoid(p); break;
 //===
 
             default:
