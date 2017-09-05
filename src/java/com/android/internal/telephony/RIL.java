@@ -3189,7 +3189,7 @@ private static final char[] HEX_CHARS = { '0', '1', '2', '3', '4', '5', '6', '7'
             case RIL_UNSOL_PCO_DATA: ret = responsePcoData(p); break;
 //+++
             case RIL_UNSOL_DEVICE_READY_NOTI: ret =  responseVoid(p); break;
-            case RIL_UNSOL_AM: ret = responseAm(p); break;
+            case RIL_UNSOL_AM: ret = responseString(p); break;
             case RIL_UNSOL_RESPONSE_HANDOVER: ret =  responseVoid(p); break;
             case RIL_UNSOL_WB_AMR_STATE: ret =  responseInts(p); break;
             case RIL_UNSOL_SNDMGR_WB_AMR_REPORT: ret =  responseVoid(p); break;
@@ -4775,7 +4775,7 @@ private static final char[] HEX_CHARS = { '0', '1', '2', '3', '4', '5', '6', '7'
         return ssData;
     }
 
-//+++
+/*
     private Object
     responseAm(Parcel p) {
         Rlog.d(RILJ_LOG_TAG, "responseAm");
@@ -4793,7 +4793,7 @@ private static final char[] HEX_CHARS = { '0', '1', '2', '3', '4', '5', '6', '7'
 
         return ret;
     }
-//===
+*/
 
     // ***** Methods for CDMA support
     @Override
