@@ -238,7 +238,7 @@ class RILRequest {
  *
  * {@hide}
  */
-public class RIL extends BaseCommands implements CommandsInterface {
+public final class RIL extends BaseCommands implements CommandsInterface {
     static final String RILJ_LOG_TAG = "RILJ";
     // Have a separate wakelock instance for Ack
     static final String RILJ_ACK_WAKELOCK_NAME = "RILJ_ACK_WL";
@@ -645,7 +645,7 @@ public class RIL extends BaseCommands implements CommandsInterface {
                     s.connect(l);
                 } catch (IOException ex) {
                     Rlog.i (RILJ_LOG_TAG, "rild connect ex: " + ex.toString());
-
+                    
                     try {
                         if (s != null) {
                             s.close();
@@ -2595,7 +2595,7 @@ public class RIL extends BaseCommands implements CommandsInterface {
         }
     }
 
-    protected void
+    private void
     send(RILRequest rr) {
         Message msg;
 
@@ -2740,15 +2740,15 @@ public class RIL extends BaseCommands implements CommandsInterface {
         Object ret = null;
 
         if (error == 0 || p.dataAvail() > 0) {
-
+            
             Rlog.d(RILJ_LOG_TAG, "processSolicited: " + rr.mRequest + " length:" + p.dataAvail());
-
-
+            
+            
 
             final byte[] data = p.marshall();
             String hex = toHexString(data);
             Rlog.d(RILJ_LOG_TAG, hex);
-
+            
             // either command succeeds or command fails but with data payload
             try {switch (rr.mRequest) {
             /*
@@ -3109,7 +3109,7 @@ private static final char[] HEX_CHARS = { '0', '1', '2', '3', '4', '5', '6', '7'
         return new String(hexChars);
       }
 
-    protected void
+    private void
     processUnsolicited (Parcel p, int type) {
         int response;
         Object ret;
@@ -3658,7 +3658,7 @@ private static final char[] HEX_CHARS = { '0', '1', '2', '3', '4', '5', '6', '7'
         }
     }
 
-    protected Object
+    private Object
     responseInts(Parcel p) {
         int numInts;
         int response[];
@@ -3733,7 +3733,7 @@ private static final char[] HEX_CHARS = { '0', '1', '2', '3', '4', '5', '6', '7'
         return sms;
     }
 
-    protected Object
+    private Object
     responseString(Parcel p) {
         String response;
 
@@ -3742,7 +3742,7 @@ private static final char[] HEX_CHARS = { '0', '1', '2', '3', '4', '5', '6', '7'
         return response;
     }
 
-    protected Object
+    private Object
     responseStrings(Parcel p) {
         int num;
         String response[];
@@ -3814,7 +3814,7 @@ private static final char[] HEX_CHARS = { '0', '1', '2', '3', '4', '5', '6', '7'
                 ? android.util.Base64.decode(s, android.util.Base64.DEFAULT) : (byte[]) null);
     }
 
-    protected Object
+    private Object
     responseIccCardStatus(Parcel p) {
         IccCardApplicationStatus appStatus;
 
@@ -3865,7 +3865,7 @@ private static final char[] HEX_CHARS = { '0', '1', '2', '3', '4', '5', '6', '7'
         return response;
     }
 
-    protected Object
+    private Object
     responseCallList(Parcel p) {
         int num;
         int voiceSettings;
@@ -4084,7 +4084,7 @@ private static final char[] HEX_CHARS = { '0', '1', '2', '3', '4', '5', '6', '7'
         return dataCall;
     }
 
-    protected Object
+    private Object
     responseOperatorInfos(Parcel p) {
         String strings[] = (String[])responseStrings(p);
         ArrayList<OperatorInfo> ret;
@@ -4216,7 +4216,7 @@ private static final char[] HEX_CHARS = { '0', '1', '2', '3', '4', '5', '6', '7'
         return response;
     }
 
-    protected Object
+    private Object
     responseSignalStrength(Parcel p) {
         int gsmSignalStrength = p.readInt() & 0xff;
         int gsmBitErrorRate = p.readInt();
@@ -4733,12 +4733,12 @@ private static final char[] HEX_CHARS = { '0', '1', '2', '3', '4', '5', '6', '7'
         }
     }
 
-    protected void riljLog(String msg) {
+    private void riljLog(String msg) {
         Rlog.d(RILJ_LOG_TAG, msg
                 + (mInstanceId != null ? (" [SUB" + mInstanceId + "]") : ""));
     }
 
-    protected void riljLogv(String msg) {
+    private void riljLogv(String msg) {
         Rlog.v(RILJ_LOG_TAG, msg
                 + (mInstanceId != null ? (" [SUB" + mInstanceId + "]") : ""));
     }
@@ -4802,7 +4802,7 @@ private static final char[] HEX_CHARS = { '0', '1', '2', '3', '4', '5', '6', '7'
     private Object
     responseAm(Parcel p) {
         Rlog.d(RILJ_LOG_TAG, "responseAm");
-
+    
         Object ret = responseString(p);
         String amString = (String) ret;
         Rlog.d(RILJ_LOG_TAG, "Executing AM: " + amString);
