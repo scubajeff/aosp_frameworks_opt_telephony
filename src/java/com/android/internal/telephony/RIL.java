@@ -645,7 +645,7 @@ public final class RIL extends BaseCommands implements CommandsInterface {
                     s.connect(l);
                 } catch (IOException ex) {
                     Rlog.i (RILJ_LOG_TAG, "rild connect ex: " + ex.toString());
-                    
+
                     try {
                         if (s != null) {
                             s.close();
@@ -1491,9 +1491,14 @@ public final class RIL extends BaseCommands implements CommandsInterface {
     @Override
     public void
     sendSMSExpectMore (String smscPDU, String pdu, Message result) {
+        /**
+         * The RIL can't handle the RIL_REQUEST_SEND_SMS_EXPECT_MORE
+         * request properly, so we use RIL_REQUEST_SEND_SMS instead.
+         */
+//        RILRequest rr
+//                = RILRequest.obtain(RIL_REQUEST_SEND_SMS_EXPECT_MORE, result);
         RILRequest rr
-                = RILRequest.obtain(RIL_REQUEST_SEND_SMS_EXPECT_MORE, result);
-
+                = RILRequest.obtain(RIL_REQUEST_SEND_SMS, result);
         constructGsmSendSmsRilRequest(rr, smscPDU, pdu);
 
         if (RILJ_LOGD) riljLog(rr.serialString() + "> " + requestToString(rr.mRequest));
@@ -2740,15 +2745,15 @@ public final class RIL extends BaseCommands implements CommandsInterface {
         Object ret = null;
 
         if (error == 0 || p.dataAvail() > 0) {
-            
+
             Rlog.d(RILJ_LOG_TAG, "processSolicited: " + rr.mRequest + " length:" + p.dataAvail());
-            
-            
+
+
 
             final byte[] data = p.marshall();
             String hex = toHexString(data);
             Rlog.d(RILJ_LOG_TAG, hex);
-            
+
             // either command succeeds or command fails but with data payload
             try {switch (rr.mRequest) {
             /*
@@ -4802,7 +4807,7 @@ private static final char[] HEX_CHARS = { '0', '1', '2', '3', '4', '5', '6', '7'
     private Object
     responseAm(Parcel p) {
         Rlog.d(RILJ_LOG_TAG, "responseAm");
-    
+
         Object ret = responseString(p);
         String amString = (String) ret;
         Rlog.d(RILJ_LOG_TAG, "Executing AM: " + amString);
