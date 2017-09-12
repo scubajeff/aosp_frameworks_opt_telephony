@@ -3141,6 +3141,35 @@ private static final char[] HEX_CHARS = { '0', '1', '2', '3', '4', '5', '6', '7'
             }
         }
 
+        /* Remap incorret response */
+        int newResponse = response;
+        switch(response) {
+            case 1040:
+                newResponse = RIL_UNSOL_ON_SS;
+                break;
+            case 1041:
+                newResponse = RIL_UNSOL_STK_CC_ALPHA_NOTIFY;
+                break;
+            case 11031:
+                newResponse = RIL_UNSOL_UICC_SUBSCRIPTION_STATUS_CHANGED;
+                break;
+            case 1038: // RIL_UNSOL_TETHERED_MODE_STATE_CHANGED
+            case 1039: // RIL_UNSOL_DATA_NETWORK_STATE_CHANGED
+            case 1042: // RIL_UNSOL_QOS_STATE_CHANGED_IND
+            case RIL_UNSOL_DEVICE_READY_NOTI: /* Registrant notification */
+            case RIL_UNSOL_SIM_PB_READY: /* Registrant notification */
+                Rlog.v(RILJ_LOG_TAG,
+                       "XMM7260: ignoring unsolicited response " +
+                       response);
+                return;
+        }
+
+        if (newResponse != response) {
+            riljLog("XMM7260: remap unsolicited response from " +
+                    response + " to " + newResponse);
+            response = newResponse;
+        }
+
         try {switch(response) {
 /*
  cat libs/telephony/ril_unsol_commands.h \
@@ -3195,15 +3224,15 @@ private static final char[] HEX_CHARS = { '0', '1', '2', '3', '4', '5', '6', '7'
             case RIL_UNSOL_LCEDATA_RECV: ret = responseLceData(p); break;
             case RIL_UNSOL_PCO_DATA: ret = responsePcoData(p); break;
 //+++
-            case RIL_UNSOL_DEVICE_READY_NOTI: ret =  responseVoid(p); break;
+//            case RIL_UNSOL_DEVICE_READY_NOTI: ret =  responseVoid(p); break;
             case RIL_UNSOL_AM: ret = responseString(p); break;
-            case RIL_UNSOL_RESPONSE_HANDOVER: ret =  responseVoid(p); break;
-            case RIL_UNSOL_WB_AMR_STATE: ret =  responseInts(p); break;
-            case RIL_UNSOL_SNDMGR_WB_AMR_REPORT: ret =  responseVoid(p); break;
+//            case RIL_UNSOL_RESPONSE_HANDOVER: ret =  responseVoid(p); break;
+//            case RIL_UNSOL_WB_AMR_STATE: ret =  responseInts(p); break;
+//            case RIL_UNSOL_SNDMGR_WB_AMR_REPORT: ret =  responseVoid(p); break;
             case RIL_UNSOL_STK_SEND_SMS_RESULT: ret = responseInts(p); break;
-            case RIL_UNSOL_STK_CALL_CONTROL_RESULT: ret = responseVoid(p); break;
-            case RIL_UNSOL_SIM_PB_READY: ret =  responseVoid(p); break;
-            case RIL_UNSOL_SRVCC_HANDOVER: ret =  responseVoid(p); break;
+//            case RIL_UNSOL_STK_CALL_CONTROL_RESULT: ret = responseVoid(p); break;
+//            case RIL_UNSOL_SIM_PB_READY: ret =  responseVoid(p); break;
+//            case RIL_UNSOL_SRVCC_HANDOVER: ret =  responseVoid(p); break;
 //===
 
             default:
